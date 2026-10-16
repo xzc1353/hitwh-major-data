@@ -76,12 +76,24 @@ export interface Major {
   rank?: string;
   /** 一句话介绍（官方招生网展示字段） */
   intro?: string;
+  /** 专业概况 / 培养目标（官方招生网「专业解析」原文） */
+  objectives?: string;
   /** 专业方向（官方招生网展示字段） */
   directions?: string[];
   /** 本科核心课程（官方招生网展示字段） */
   coreCourses?: string[];
+  /** 能力要求：学习本专业需要具备的特质（官方原文） */
+  requiredTraits?: string;
+  /** 学习难度：学习过程中可能遇到的困难（官方原文） */
+  learningDifficulty?: string;
+  /** 应用场景：本专业人才解决哪些现实问题（官方原文） */
+  applications?: string;
   /** 就业去向说明（官方招生网展示字段） */
   employment?: string;
+  /** 深造路径：升学 / 留学相关表述（自官方就业段落抽取） */
+  furtherStudy?: string[];
+  /** 常见误区：官方专设章节对社会认知偏差的说明（官方原文） */
+  misconceptions?: string;
   /** 客观备注 */
   notes: string[];
   /** 数据来源 */

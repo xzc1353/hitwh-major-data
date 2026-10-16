@@ -1,11 +1,18 @@
 /**
  * 将抓取结果合并进 src/data/majors.json
  * ------------------------------------------------------------------
- * 只合并三项可逐字核验的字段：rank（软科评级）、intro（一句话介绍）、coreCourses（本科核心课程）。
+ * 合并的均为官方「专业解析」页原文，逐字搬运、不改写：
+ *   rank（软科评级）、intro（一句话介绍）、objectives（专业概况/培养目标）、
+ *   coreCourses（本科核心课程）、requiredTraits（能力要求）、
+ *   learningDifficulty（学习难度）、applications（应用场景）、
+ *   employment（就业方向）、furtherStudy（深造路径）、misconceptions（常见误区）
  *
  * 为什么不合并「专业方向」：官方页面对该信息的表述位置不固定，自动提取噪声大
  * （曾抓到"就业优势""培养优势"等段落），存在曲解官方原意的风险。
  * 按本站"严格对齐官方口径、不推断、不改写"的红线，宁缺勿滥，故舍弃该字段。
+ *
+ * 为什么不合并「培养优势 / 核心优势」：该类章节带有宣传色彩，
+ * 与本站"中立、不评价、不推荐"的定位不符，故不采用。
  *
  * 用法：node scripts/merge-major-details.mjs
  */
@@ -30,6 +37,17 @@ function cleanCourses(list) {
     .slice(0, 4);
 }
 
+/** 文本型字段：抓取值 → majors.json 字段名 */
+const TEXT_FIELDS = [
+  ['intro', 'intro'],
+  ['objectives', 'objectives'],
+  ['requiredTraits', 'requiredTraits'],
+  ['learningDifficulty', 'learningDifficulty'],
+  ['applications', 'applications'],
+  ['employment', 'employment'],
+  ['misconceptions', 'misconceptions'],
+];
+
 const SOURCE_LABEL = (name) => `哈尔滨工业大学（威海）本科招生网 · 专业解析（${name}）`;
 
 let updated = 0;
@@ -48,13 +66,23 @@ for (const major of majors) {
     major.rank = d.rank;
     touched = true;
   }
-  if (d.intro && !major.intro) {
-    major.intro = d.intro;
-    touched = true;
+
+  for (const [srcKey, destKey] of TEXT_FIELDS) {
+    const val = d[srcKey];
+    if (val && typeof val === 'string' && val.length > 10 && !major[destKey]) {
+      major[destKey] = val;
+      touched = true;
+    }
   }
+
   const courses = cleanCourses(d.coreCourses);
   if (courses.length && !(major.coreCourses && major.coreCourses.length)) {
     major.coreCourses = courses;
+    touched = true;
+  }
+
+  if (Array.isArray(d.furtherStudy) && d.furtherStudy.length && !(major.furtherStudy && major.furtherStudy.length)) {
+    major.furtherStudy = d.furtherStudy;
     touched = true;
   }
 
@@ -69,9 +97,16 @@ for (const major of majors) {
 
 writeFileSync(majorsPath, JSON.stringify(majors, null, 2) + '\n', 'utf8');
 
-const withRank = majors.filter((m) => m.rank).length;
-const withIntro = majors.filter((m) => m.intro).length;
-const withCourses = majors.filter((m) => m.coreCourses && m.coreCourses.length).length;
-
+const pct = (n) => `${n}/${majors.length}`;
 console.log(`合并完成：更新 ${updated} 个，跳过 ${skipped} 个`);
-console.log(`当前覆盖：软科评级 ${withRank}/${majors.length}，一句话介绍 ${withIntro}/${majors.length}，核心课程 ${withCourses}/${majors.length}`);
+console.log('字段覆盖：');
+console.log(`  软科评级        ${pct(majors.filter((m) => m.rank).length)}`);
+console.log(`  一句话介绍      ${pct(majors.filter((m) => m.intro).length)}`);
+console.log(`  专业概况        ${pct(majors.filter((m) => m.objectives).length)}`);
+console.log(`  本科核心课程    ${pct(majors.filter((m) => m.coreCourses?.length).length)}`);
+console.log(`  能力要求        ${pct(majors.filter((m) => m.requiredTraits).length)}`);
+console.log(`  学习难度        ${pct(majors.filter((m) => m.learningDifficulty).length)}`);
+console.log(`  应用场景        ${pct(majors.filter((m) => m.applications).length)}`);
+console.log(`  就业方向        ${pct(majors.filter((m) => m.employment).length)}`);
+console.log(`  深造路径        ${pct(majors.filter((m) => m.furtherStudy?.length).length)}`);
+console.log(`  常见误区        ${pct(majors.filter((m) => m.misconceptions).length)}`);

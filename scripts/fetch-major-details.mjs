@@ -1,10 +1,18 @@
 /**
- * 从威海校区本科招生网「专业解析」页批量抓取专业字段
+ * 从威海校区本科招生网「专业解析」页批量抓取专业字段（多维度版）
  * ------------------------------------------------------------------
- * 目的：把官方已公开的「软科评级 / 一句话介绍 / 专业方向 / 本科核心课程」
- *       结构化提取出来，供 src/data/majors.json 补全。
+ * 官方页面采用固定的章节结构，本脚本按章节标题切分后逐项提取：
+ *   - 软科评级
+ *   - 一句话介绍
+ *   - 专业概况 / 培养目标（"X 专业怎么样"）
+ *   - 本科核心课程
+ *   - 能力要求（"学习 X 专业的学生需要具备哪些特质"）
+ *   - 学习难度（"学习 X 专业过程中可能会遇到哪些困难"）
+ *   - 应用场景（"现实工作和生活中，哪些问题是通过 X 专业的人才来解决的"）
+ *   - 就业方向（"X 专业的毕业生就业怎么样"）
+ *   - 深造路径（从就业段落中抽取含升学/深造/留学等表述的句子）
  *
- * 原则：只提取官方页面已有文字，不做改写、不做推断；提取不到的字段留空。
+ * 原则：只做原文搬运，不改写、不概括、不评价；提取不到的字段一律留空。
  *
  * 用法：node scripts/fetch-major-details.mjs
  * 输出：scripts/out/major-details.json
@@ -14,12 +22,12 @@ import { fileURLToPath } from 'node:url';
 import { resolve, dirname } from 'node:path';
 
 const BASE = 'https://zsb.hitwh.edu.cn/home/major/details?id=';
-
-/** 请求间隔（毫秒），避免对官方站点造成压力 */
 const DELAY_MS = 400;
 
 /** 本地专业 id → 官方「专业解析」页 id */
 const MAJOR_PAGE_IDS = {
+  cs: 92,
+  mech: 1,
   ai: 93,
   cybersec: 94,
   auto: 95,
@@ -58,95 +66,148 @@ async function fetchHtml(id) {
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
-/** HTML → 按段落切分的纯文本行 */
-function toLines(html) {
-  const body = html
-    .replace(/<script[\s\S]*?<\/script>/gi, '')
-    .replace(/<style[\s\S]*?<\/style>/gi, '')
-    .replace(/<br\s*\/?>/gi, '\n')
-    .replace(/<\/(p|div|h[1-6]|li|tr|td)>/gi, '\n');
-
-  const text = body
-    .replace(/<[^>]+>/g, '')
+function decode(s) {
+  return s
     .replace(/&nbsp;/g, ' ')
     .replace(/&lt;/g, '<')
     .replace(/&gt;/g, '>')
     .replace(/&quot;/g, '"')
     .replace(/&#39;/g, "'")
     .replace(/&amp;/g, '&')
-    .replace(/[\u200b\ufeff]/g, '')
-    .replace(/[ \t\u00a0]+/g, ' ');
-
-  return text
-    .split('\n')
-    .map((s) => s.trim())
-    .filter((s) => s.length > 0);
+    .replace(/[\u200b\ufeff]/g, '');
 }
 
-/** 该行是否像一个"章节标题"（用于判断字段结束） */
-function looksLikeHeading(line) {
-  return (
-    line.length <= 30 &&
-    /(专业|课程|优势|困难|特质|误区|就业|介绍|方向|怎么样|是什么)/.test(line) &&
-    !/[。；;]/.test(line)
-  );
+function stripTags(s) {
+  return decode(s.replace(/<[^>]+>/g, '')).replace(/[ \t\u00a0]+/g, ' ').trim();
 }
 
-/** 课程段落起始标记 */
-const COURSE_LABEL =
-  /^(专业核心课程|核心课程|专业基础课程|基础课程|专业选修课程|选修课程|主要课程|主干课程|专业主干课程|课程设置|学科基础课|专业方向课)[：:]/;
+/**
+ * 按 <p> 切块，识别标题块与正文块，返回 [{heading, body[]}]
+ * 标题判定：块内含 <strong>，且纯文本长度较短、不以句号/分号结尾。
+ */
+function parseSections(html) {
+  const cleaned = html
+    .replace(/<script[\s\S]*?<\/script>/gi, '')
+    .replace(/<style[\s\S]*?<\/style>/gi, '');
 
-/** 明显的非课程行（避免把"适合报考的学生"之类收进课程） */
-const NON_COURSE = /(适合|报考|特质|困难|就业|误区|优势|培养|师资|平台|深造|出国|留学)/;
+  const blocks = cleaned
+    .split(/<\/p\s*>/i)
+    .map((b) => ({ raw: b, text: stripTags(b) }))
+    .filter((b) => b.text.length > 0);
 
-function extract(html) {
-  const lines = toLines(html);
-  const out = { rank: undefined, intro: undefined, directions: [], coreCourses: [] };
+  const sections = [];
+  let current = { heading: '__preamble__', body: [] };
 
-  // 软科评级
-  const rankLine = lines.find((l) => /软科评级/.test(l));
-  const rankMatch = rankLine && rankLine.match(/软科评级[：:]\s*([A-Za-z]\+?)/);
-  if (rankMatch) out.rank = rankMatch[1];
-
-  // 一句话介绍：标题行的下一行
-  const iIdx = lines.findIndex((l) => /一句话介绍/.test(l));
-  if (iIdx >= 0 && lines[iIdx + 1] && !looksLikeHeading(lines[iIdx + 1])) {
-    out.intro = lines[iIdx + 1];
-  }
-
-  // 专业方向：仅接受"标签 + 紧随其后的短句"，按首个句号截断
-  for (const l of lines) {
-    const m = l.match(/(?:专业方向|研究方向|特色方向)(?:为|是|涵盖|包括|主要)?[：:，,]?\s*(.+)/);
-    if (!m) continue;
-    let s = m[1];
-    const dot = s.indexOf('。');
-    if (dot > 0) s = s.slice(0, dot + 1);
-    s = s.trim();
-    if (s.length < 4 || s.length > 80) continue;
-    if (!out.directions.includes(s)) out.directions.push(s);
-    if (out.directions.length >= 2) break;
-  }
-
-  // 本科核心课程：定位"本科核心课程"标题，取其后的课程行，遇到下一章节标题即停止
-  const cIdx = lines.findIndex((l) => /本科核心课程/.test(l));
-  if (cIdx >= 0) {
-    // 标题行本身可能已含内容（标题与正文同段）
-    const inline = lines[cIdx].replace(/^.*?本科核心课程[：:]?\s*/, '').trim();
-    if (inline.length > 10) out.coreCourses.push(inline);
-
-    for (let i = cIdx + 1; i < lines.length && i <= cIdx + 8; i++) {
-      const l = lines[i];
-      if (l.length < 4) continue;
-      // 下一章节标题 → 停止
-      if (/^(学习|现实|社会)/.test(l) && l.length < 40) break;
-      if (/专业的?(毕业生|培养优势|学生)/.test(l) && l.length < 40) break;
-      if (/^(培养目标|专业优势|专业特色)/.test(l) && l.length < 40) break;
-      // 明显非课程内容 → 停止
-      if (NON_COURSE.test(l) && !/课程/.test(l)) break;
-      out.coreCourses.push(l);
-      if (out.coreCourses.join('').length > 900) break;
+  for (const b of blocks) {
+    const isHeading =
+      /<strong>/i.test(b.raw) && b.text.length <= 48 && !/[。；;]$/.test(b.text);
+    if (isHeading) {
+      // 空正文的章节也要保留：官方页面常见"主标题 + 副标题"连续出现
+      sections.push(current);
+      current = { heading: b.text, body: [] };
+    } else {
+      current.body.push(b.text);
     }
   }
+  sections.push(current);
+
+  return sections.filter((s) => s.heading !== '__preamble__' || s.body.length > 0);
+}
+
+/** 章节正文结束的标记（遇到这些标题说明已进入下一主题） */
+const NEXT_TOPIC = /(本科核心课程|特质|困难|现实工作|哪些问题|就业|误区|培养优势|一句话介绍)/;
+
+/** 取第一个标题匹配的章节正文；若该章节正文为空，向后并入紧随的伪标题章节 */
+function pick(sections, re) {
+  const idx = sections.findIndex((s) => re.test(s.heading));
+  if (idx < 0) return undefined;
+
+  const parts = [];
+  for (let i = idx; i < sections.length && i <= idx + 2; i++) {
+    if (i > idx && NEXT_TOPIC.test(sections[i].heading)) break;
+    parts.push(...sections[i].body);
+    if (parts.length) break;
+  }
+  const text = parts.join('\n').trim();
+  return text.length > 0 ? text : undefined;
+}
+
+/** 从长文本中抽取含指定关键词的句子 */
+function pickSentences(text, re, limit = 4) {
+  if (!text) return [];
+  const sentences = text
+    .split(/(?<=[。！？])/)
+    .map((s) => s.trim())
+    .filter(Boolean);
+  return sentences.filter((s) => re.test(s)).slice(0, limit);
+}
+
+function extract(html) {
+  const sections = parseSections(html);
+  const out = {
+    rank: undefined,
+    intro: undefined,
+    objectives: undefined,
+    coreCourses: [],
+    requiredTraits: undefined,
+    learningDifficulty: undefined,
+    applications: undefined,
+    employment: undefined,
+    furtherStudy: [],
+  };
+
+  // 软科评级
+  for (const s of sections) {
+    const m = s.heading.match(/软科评级[：:]\s*([A-Za-z]\+?)/) || s.body.join(' ').match(/软科评级[：:]\s*([A-Za-z]\+?)/);
+    if (m) {
+      out.rank = m[1];
+      break;
+    }
+  }
+  if (!out.rank) {
+    const m = stripTags(html).match(/软科评级[：:]\s*([A-Za-z]\+?)/);
+    if (m) out.rank = m[1];
+  }
+
+  // 一句话介绍
+  const introSec = sections.find((s) => /一句话介绍/.test(s.heading));
+  if (introSec && introSec.body.length) out.intro = introSec.body[0];
+
+  // 专业概况 / 培养目标（不同页面存在多种标题写法，逐级回退）
+  out.objectives =
+    pick(sections, /专业(怎么样|是什么)/) ??
+    pick(sections, /专业简介/) ??
+    pick(sections, /专业定位/);
+
+  // 本科核心课程
+  const courseSec = sections.find((s) => /本科核心课程/.test(s.heading));
+  if (courseSec) {
+    const inline = courseSec.heading.replace(/^.*?本科核心课程[：:]?\s*/, '').trim();
+    const all = [...(inline.length > 10 ? [inline] : []), ...courseSec.body];
+    out.coreCourses = all
+      .map((s) => s.trim())
+      .filter((s) => s.length >= 8)
+      .filter((s) => /[、，,]/.test(s))
+      .slice(0, 6);
+  }
+
+  // 能力要求
+  out.requiredTraits = pick(sections, /特质|需要具备/);
+
+  // 学习难度
+  out.learningDifficulty = pick(sections, /困难/);
+
+  // 应用场景
+  out.applications = pick(sections, /现实工作和生活|哪些问题/);
+
+  // 就业方向
+  out.employment = pick(sections, /毕业生就业|就业怎么样/);
+
+  // 深造路径：从就业段落中抽取
+  out.furtherStudy = pickSentences(out.employment, /升学|深造|读研|留学|推免|攻读|考研|保研/, 4);
+
+  // 常见误区（官方专设章节，客观陈述社会认知偏差）
+  out.misconceptions = pick(sections, /误区/);
 
   return out;
 }
@@ -162,8 +223,9 @@ for (const [majorId, pageId] of Object.entries(MAJOR_PAGE_IDS)) {
     const data = extract(html);
     results[majorId] = data;
     ok++;
+    const flag = (v) => (v && String(v).length > 10 ? '✓' : '·');
     console.log(
-      `  ✓ ${majorId.padEnd(16)} rank=${(data.rank ?? '-').padEnd(3)} intro=${data.intro ? '有' : '无'} dirs=${data.directions.length} courses=${data.coreCourses.length}`,
+      `  ✓ ${majorId.padEnd(16)} 评级${(data.rank ?? '-').padEnd(3)} 概况${flag(data.objectives)} 课程${String(data.coreCourses.length).padStart(2)} 能力${flag(data.requiredTraits)} 难度${flag(data.learningDifficulty)} 应用${flag(data.applications)} 就业${flag(data.employment)} 深造${data.furtherStudy.length}`,
     );
   } catch (err) {
     results[majorId] = { error: String(err.message || err) };

@@ -3,6 +3,7 @@ import Breadcrumbs from '@/components/Breadcrumbs';
 import BackButton from '@/components/BackButton';
 import DataNotice from '@/components/ui/DataNotice';
 import SourceList from '@/components/ui/SourceList';
+import ClusterComparison from '@/components/ui/ClusterComparison';
 import CommentSection from '@/components/comments/CommentSection';
 import { formatTuition, getClusterWithMajors, getQuotesOfCluster } from '@/lib/data';
 import NotFound from './NotFound';
@@ -141,6 +142,8 @@ export default function ClusterDetail() {
           </section>
         </aside>
       </div>
+
+      <ClusterComparison majors={cluster.majors} />
 
       {quotes.length > 0 && (
         <section className="mt-6">

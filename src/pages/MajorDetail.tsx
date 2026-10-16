@@ -4,6 +4,7 @@ import BackButton from '@/components/BackButton';
 import DataNotice from '@/components/ui/DataNotice';
 import SourceList from '@/components/ui/SourceList';
 import EmptyField from '@/components/ui/EmptyField';
+import Prose from '@/components/ui/Prose';
 import CommentSection from '@/components/comments/CommentSection';
 import { getClustersOfMajor, getMajor } from '@/lib/data';
 import NotFound from './NotFound';
@@ -37,30 +38,21 @@ export default function MajorDetail() {
           <h1 className="text-xl font-semibold text-slate-900">{major.name}</h1>
           {major.rank && <span className="tag-blue">软科评级 {major.rank}</span>}
         </div>
-        {major.intro && <p className="text-[13.5px] text-slate-500">{major.intro}</p>}
+        {major.intro && <p className="text-[13.5px] leading-relaxed text-slate-500">{major.intro}</p>}
       </header>
 
       <DataNotice compact />
 
-      <div className="grid gap-5 lg:grid-cols-[1.15fr_0.85fr]">
-        <section className="space-y-5">
-          <section className="card p-4">
-            <h2 className="sec-title">专业方向</h2>
-            {major.directions?.length ? (
-              <ul className="flex flex-wrap gap-1.5">
-                {major.directions.map((d) => (
-                  <li key={d} className="tag-blue">
-                    {d}
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <EmptyField />
-            )}
-          </section>
+      <div className="grid gap-5 lg:grid-cols-[1.25fr_0.75fr]">
+        {/* 主栏：各维度官方原文 */}
+        <div className="space-y-4">
+          <Prose title="专业概况与培养目标" text={major.objectives} collapseAt={380} />
 
           <section className="card p-4">
-            <h2 className="sec-title">本科核心课程</h2>
+            <h2 className="sec-title">
+              本科核心课程
+              <span className="ml-1 text-[11.5px] font-normal text-slate-400">官方原文</span>
+            </h2>
             {major.coreCourses?.length ? (
               <ul className="space-y-2 text-[13.5px] leading-relaxed text-slate-700">
                 {major.coreCourses.map((c, i) => (
@@ -74,17 +66,34 @@ export default function MajorDetail() {
             )}
           </section>
 
+          <Prose title="能力要求" text={major.requiredTraits} collapseAt={320} />
+          <Prose title="学习难度" text={major.learningDifficulty} collapseAt={320} />
+          <Prose title="应用场景" text={major.applications} collapseAt={360} />
+
           <section className="card p-4">
-            <h2 className="sec-title">就业去向</h2>
-            {major.employment ? (
-              <p className="text-[13.5px] leading-relaxed text-slate-700">{major.employment}</p>
+            <h2 className="sec-title">
+              深造路径
+              <span className="ml-1 text-[11.5px] font-normal text-slate-400">官方原文摘录</span>
+            </h2>
+            {major.furtherStudy?.length ? (
+              <ul className="space-y-2 text-[13.5px] leading-relaxed text-slate-700">
+                {major.furtherStudy.map((s, i) => (
+                  <li key={i} className="rounded border-l-2 border-hit-300 bg-slate-50/70 px-3 py-2">
+                    {s}
+                  </li>
+                ))}
+              </ul>
             ) : (
-              <EmptyField />
+              <EmptyField hint="官方招生网未单独公开深造数据，请查阅学院当年培养方案或就业质量报告。" />
             )}
           </section>
-        </section>
 
-        <aside className="space-y-5">
+          <Prose title="就业方向" text={major.employment} collapseAt={380} />
+          <Prose title="常见认知误区" text={major.misconceptions} collapseAt={320} />
+        </div>
+
+        {/* 侧栏：基本信息 */}
+        <aside className="space-y-4">
           <section className="card p-4">
             <h2 className="sec-title">基本信息</h2>
             <dl>
@@ -92,6 +101,7 @@ export default function MajorDetail() {
               <Field label="所属学院">{major.college}</Field>
               <Field label="培养地点">{major.campus}</Field>
               <Field label="选考科目">{major.subjectRequirement.join(' + ')}</Field>
+              {major.rank && <Field label="软科评级">{major.rank}</Field>}
               <Field label="所属大类">
                 <span className="flex flex-wrap gap-1.5">
                   {clusters.map((c) => (
@@ -118,7 +128,8 @@ export default function MajorDetail() {
           <section className="card p-4">
             <SourceList sources={major.sources} />
             <p className="mt-3 text-[12px] leading-relaxed text-slate-400">
-              标注"暂无官方公开数据"的字段，表示学校公开渠道未发布该项内容，本站不做推测填充。
+              本页各维度内容均为官方招生网「专业解析」页原文，逐字搬运、未作改写。
+              标注「官方未公开」的字段表示学校公开渠道无该项内容，本站不做推测填充。
             </p>
           </section>
         </aside>
