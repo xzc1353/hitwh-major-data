@@ -133,10 +133,13 @@ src/
 
 站点通过 WorkBuddy 内置发布能力上线，**不依赖 GitHub 与 Vercel**：
 
-- 线上地址：`https://8242e7c34fad4c7792c337549de2136b.sg.agentos-app.run`
+- 线上地址：`https://3aed7820e6814f73b6f331f0908d2558.sg.agentos-app.run`
 - 代码托管（可选，仅用于版本管理）：`https://github.com/xzc1353/hitwh-major-data`
 - 发布单元：`serve/`（零依赖 Node 静态服务 + 自带 SPA 回退）
 - 管理入口：**设置 — 数据管理 — 应用**
+
+> ⚠️ **重新发布会更换分享链接**：实测再次发布后，旧地址返回 400 且不再可用。
+> 因此**每次重新发布后，请以最新返回的链接为准重新分享**；若已把旧链接发给他人，需一并告知新地址。
 
 > 之所以不使用 `vite preview` 或 `python3 -m http.server`：本项目使用 BrowserRouter，
 > 必须把未知路径回退到 `index.html`，否则 `/clusters/xxx`、`/majors/xxx` 这类深层链接
