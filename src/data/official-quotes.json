@@ -1,0 +1,176 @@
+[
+  {
+    "id": "split-rule",
+    "topic": "专业分流规则：完全按学生意愿任选",
+    "quote": "在专业分流时完全按照学生意愿在本专业集群内任选专业。",
+    "source": "哈尔滨工业大学本科生招生办公室主任邢朝霞访谈（教育部阳光高考信息平台）",
+    "sourceUrl": "https://gaokao.chsi.com.cn/gkxx/zbzrft/zx/202406/20240619/2293297367.html",
+    "quoteDate": "2024-06-19",
+    "clusterIds": [
+      "future-info",
+      "future-manufacture",
+      "future-city",
+      "future-manufacture-top",
+      "sci-eng-cross",
+      "software-eng"
+    ]
+  },
+  {
+    "id": "split-time",
+    "topic": "分流时间：大二结束后",
+    "quote": "哈尔滨工业大学（威海）山东省综合评价集群录取学生大二结束后可在录取集群内任选专业。",
+    "source": "《哈尔滨工业大学（威海）2024 年综合评价招生简章》三、注意事项（一）",
+    "sourceUrl": "https://zsb.hitwh.edu.cn/home/article/details?id=1549",
+    "quoteDate": "2024-04-23",
+    "clusterIds": [
+      "future-info",
+      "future-manufacture",
+      "future-city",
+      "future-manufacture-top",
+      "sci-eng-cross",
+      "software-eng"
+    ]
+  },
+  {
+    "id": "split-time-2026",
+    "topic": "2026 年实际执行安排",
+    "quote": "系统填报时间：5月11日9:00——5月12日16:00；分流原则：1.集群所在的学生在原所属集群下任选一个专业。2.2024级其他专业类的学生在本专业类内任选专业，由学院组织，在教务系统分流。",
+    "source": "哈尔滨工业大学（威海）教务处《关于 2024 级本科生集群内选择专业及 2025 级本科生分托管学院工作安排的通知》",
+    "sourceUrl": "https://jwc.hitwh.edu.cn/2026/0507/c2405a213100/page.htm",
+    "quoteDate": "2026-05-07",
+    "clusterIds": [
+      "future-info",
+      "future-manufacture",
+      "future-city",
+      "future-manufacture-top",
+      "sci-eng-cross"
+    ]
+  },
+  {
+    "id": "split-1plus1plusX",
+    "topic": "“1+1+X”培养模式官方定义",
+    "quote": "构建了“1+1+X”模式，即“第一学年厚植数理基础，统一培养，突出工程领域数理基础的厚度宽度（1）”“第二学年夯实工程领域基础，分类培养，强化工程领域基础的深度广度（1）”“第三四学年实施工程驱动的学科专业交叉培养，强化工程创新能力（X）”。",
+    "source": "哈尔滨工业大学本科生招生办公室主任邢朝霞访谈（教育部阳光高考信息平台）",
+    "sourceUrl": "https://gaokao.chsi.com.cn/gkxx/zbzrft/zx/202406/20240619/2293297367.html",
+    "quoteDate": "2024-06-19",
+    "clusterIds": [
+      "future-info",
+      "future-manufacture",
+      "future-city",
+      "future-manufacture-top",
+      "sci-eng-cross",
+      "software-eng"
+    ]
+  },
+  {
+    "id": "transfer-general",
+    "topic": "转专业总原则：转出无门槛，转入有要求",
+    "quote": "在籍学生根据国家、学校相关规定和本人兴趣申请转专业。转出无门槛，转入有要求（根据专业准入实施细则进行考核）。",
+    "source": "哈尔滨工业大学（威海）本科招生网《转（选）专业》栏目",
+    "sourceUrl": "https://zsb.hitwh.edu.cn/mobile/article/details?id=557",
+    "quoteDate": "2020-03-03",
+    "clusterIds": [
+      "future-info",
+      "future-manufacture",
+      "future-city",
+      "future-manufacture-top",
+      "sci-eng-cross",
+      "software-eng"
+    ]
+  },
+  {
+    "id": "transfer-time",
+    "topic": "转专业申请时间：第一学年夏季学期",
+    "quote": "第一学年夏季学期，专业（集群/类）内在籍学生根据国家、学校相关规定和本人兴趣申请转专业（集群/类）。除招生时有约定的，学生转专业（集群/类）转出无门槛，转入有要求【根据专业（集群/类）准入实施细则进行考核】。",
+    "source": "哈尔滨工业大学本科生招生办公室主任邢朝霞访谈（教育部阳光高考信息平台）",
+    "sourceUrl": "https://gaokao.chsi.com.cn/gkxx/zbzrft/zx/202406/20240619/2293297367.html",
+    "quoteDate": "2024-06-19",
+    "clusterIds": [
+      "future-info",
+      "future-manufacture",
+      "future-city",
+      "future-manufacture-top",
+      "sci-eng-cross",
+      "software-eng"
+    ]
+  },
+  {
+    "id": "transfer-normal",
+    "topic": "统招类型学生：可全校范围申请转专业",
+    "quote": "统招类型，综合评价以及卓越优才计划中高考投档成绩在生源省我校一批次录取投档成绩的可全校范围申请转专业，需通过考核。",
+    "source": "哈尔滨工业大学（威海）本科招生网《转（选）专业》栏目",
+    "sourceUrl": "https://zsb.hitwh.edu.cn/mobile/article/details?id=557",
+    "quoteDate": "2020-03-03",
+    "clusterIds": ["future-info"]
+  },
+  {
+    "id": "transfer-excellent-charter",
+    "topic": "卓越优才计划：享有申请转专业机会的条件",
+    "quote": "提前批次、国家专项计划、高校专项计划、民族班、卓越优才计划和卓越联培班录取的学生投档成绩若在生源省（自治区、直辖市）我校本科一批（合并本科批次的省份执行其相关规定）录取提档分数线以上的，按照学校规定享有申请转专业机会。",
+    "source": "《哈尔滨工业大学 2026 年本科招生章程》第十七条",
+    "sourceUrl": "http://zsb.hit.edu.cn/article/read/c6615f467530827fb19246dce601b931",
+    "quoteDate": "2026-05-28",
+    "clusterIds": [
+      "future-manufacture",
+      "future-city",
+      "sci-eng-cross",
+      "software-eng"
+    ]
+  },
+  {
+    "id": "transfer-excellent-limit",
+    "topic": "卓越优才计划：投档成绩低于一批线时的转专业范围",
+    "quote": "卓越优才计划（含单列代码）录取的学生高考投档成绩在生源省（自治区、直辖市）我校一批次录取投档成绩以下的，入学后仅可申请在卓越优才计划内转专业（类），需通过考核。",
+    "source": "哈尔滨工业大学本科生招生办公室主任邢朝霞访谈（教育部阳光高考信息平台）",
+    "sourceUrl": "https://gaokao.chsi.com.cn/gkxx/zbzrft/zx/202406/20240619/2293297367.html",
+    "quoteDate": "2024-06-19",
+    "clusterIds": [
+      "future-manufacture",
+      "future-city",
+      "sci-eng-cross",
+      "software-eng"
+    ]
+  },
+  {
+    "id": "transfer-quota",
+    "topic": "转专业接收名额与志愿规则",
+    "quote": "我校全日制在籍学生（招生录取时有特殊政策限定的除外）在经过第一学年的学习后可申请再次选择专业，每名学生可申报两个志愿；专业（类）的最大接收人数不超过专业（类）招生计划数的 20%（不含英才生）；优先录取申报第一志愿的学生，第一志愿录取结束后，其接收计划未完成的专业（类），需继续录取申报第二志愿的学生。",
+    "source": "《哈尔滨工业大学关于各院（系）制定本科生专业准入实施细则的指导意见》（校本〔2018〕12 号）",
+    "sourceUrl": "https://jwc.hitwh.edu.cn/2023/0216/c2553a164397/page.htm",
+    "quoteDate": "2018-06-07",
+    "clusterIds": [
+      "future-info",
+      "future-manufacture",
+      "future-city",
+      "sci-eng-cross",
+      "software-eng"
+    ]
+  },
+  {
+    "id": "top-transfer",
+    "topic": "拔尖班转专业（关键口径）",
+    "quote": "威海校区工科试验班（先进材料与智能制造类拔尖班）、工科试验班（智能土木类拔尖班）、工科试验班（智慧生态环境类拔尖班）、工科试验班（机器人与智能装备类拔尖班）录取的学生前2年在威海校区（威海市）培养，后2年在校本部（哈尔滨市）培养，大一学年所有考试及格，可申请在以上四个专业类内转专业（类）。",
+    "source": "哈尔滨工业大学本科生招生办公室主任邢朝霞访谈（教育部阳光高考信息平台）",
+    "sourceUrl": "https://gaokao.chsi.com.cn/gkxx/zbzrft/zx/202406/20240619/2293297367.html",
+    "quoteDate": "2024-06-19",
+    "clusterIds": ["future-manufacture-top"]
+  },
+  {
+    "id": "top-transfer-web",
+    "topic": "拔尖班转专业范围（招生网同口径）",
+    "quote": "拔尖创新班录取的学生仅可申请在四个拔尖创新班内转专业/类，需满足转专业条件。",
+    "source": "哈尔滨工业大学（威海）本科招生网《转（选）专业》栏目",
+    "sourceUrl": "https://zsb.hitwh.edu.cn/mobile/article/details?id=557",
+    "quoteDate": "2020-03-03",
+    "clusterIds": ["future-manufacture-top"]
+  },
+  {
+    "id": "top-campus",
+    "topic": "拔尖班培养地点与推免政策",
+    "quote": "工科试验班（机器人与智能装备类拔尖班）采用 2+2 跨校区流动培养模式，前 2 年在威海校区（威海市）培养，后 2 年在校本部（哈尔滨市）培养；由校本部高端人才担任班主任；与校本部学生享受相同推免政策。",
+    "source": "《哈尔滨工业大学（威海）2024 年综合评价招生简章》二、招生计划及专业 · 备注",
+    "sourceUrl": "https://zsb.hitwh.edu.cn/home/article/details?id=1549",
+    "quoteDate": "2024-04-23",
+    "clusterIds": ["future-manufacture-top"]
+  }
+]

@@ -1,0 +1,10 @@
+{
+  "name": "hitwh-major-data-serve",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "description": "哈工大威海·大类专业数据参考 —— 零依赖静态发布单元",
+  "scripts": {
+    "start": "node server.mjs"
+  }
+}
