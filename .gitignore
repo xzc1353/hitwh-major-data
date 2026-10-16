@@ -10,3 +10,6 @@ dist-ssr
 .vscode/*
 !.vscode/extensions.json
 .idea
+
+# 抓取脚本的中间产物（可由 npm run fetch:majors 重新生成）
+scripts/out/

@@ -127,9 +127,52 @@ src/
 
 ---
 
-## 六、部署与权限配置
+## 六、部署与更新
 
-完整流程见 **[docs/DEPLOY.md](docs/DEPLOY.md)**，包含：
+### 6.1 当前实际使用的发布方式：内置发布
+
+站点通过 WorkBuddy 内置发布能力上线，**不依赖 GitHub 与 Vercel**：
+
+- 线上地址：`https://8242e7c34fad4c7792c337549de2136b.sg.agentos-app.run`
+- 代码托管（可选，仅用于版本管理）：`https://github.com/xzc1353/hitwh-major-data`
+- 发布单元：`serve/`（零依赖 Node 静态服务 + 自带 SPA 回退）
+- 管理入口：**设置 — 数据管理 — 应用**
+
+> 之所以不使用 `vite preview` 或 `python3 -m http.server`：本项目使用 BrowserRouter，
+> 必须把未知路径回退到 `index.html`，否则 `/clusters/xxx`、`/majors/xxx` 这类深层链接
+> 刷新时会 404。`serve/server.mjs` 用约 120 行 Node 内置模块实现了该回退。
+
+### 6.2 更新线上内容的完整流程
+
+```bash
+# 1) 修改数据或代码
+#    数据文件位于 src/data/*.json
+
+# 2) 构建
+npm run build
+
+# 3) 同步到发布单元
+npm run pack:serve
+
+# 4) 重新发布（内容覆盖，分享链接保持不变）
+```
+
+第 4 步通过内置发布完成，无需重新申请地址。
+
+### 6.3 版本管理
+
+```bash
+git add -A && git commit -m "..." && git push
+```
+
+推送使用 SSH 通道（`~/.ssh/config` 中已将 `github.com` 指向 `ssh.github.com:443`，
+因为本机 22 端口对 github.com 不可用）。
+
+### 6.4 如果将来改用 Vercel
+
+`vercel.json` 已备好 SPA 重写与缓存头配置，可直接导入 Vercel 并绑定自有域名。
+届时把 `serve/` 的发布方式替换为 Vercel 的 Git 集成即可实现 push 自动部署。
+详见 **[docs/DEPLOY.md](docs/DEPLOY.md)**，其中还包含：
 
 - Vercel 零成本部署（含 SPA 重写配置）
 - Waline + Neon 免费 PostgreSQL 部署与管理员账号设置
